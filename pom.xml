@@ -37,7 +37,6 @@
 
     <dependencyManagement>
         <dependencies>
-
             <!-- Production dependencies -->
             <dependency>
                 <groupId>org.springframework.boot</groupId>
@@ -64,6 +63,13 @@
                 <artifactId>spring-boot-starter-test</artifactId>
                 <version>${spring-boot.version}</version>
                 <scope>test</scope>
+            </dependency>
+
+            <!-- Other dependencies -->
+            <dependency>
+                <groupId>org.elasticsearch.client</groupId>
+                <artifactId>elasticsearch-rest-high-level-client</artifactId>
+                <version>7.16.3</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
