@@ -22,6 +22,7 @@ public class GameInfoListener {
         IndexRequest index = new IndexRequest("games");
         index.id(id);
         index.source(msg, XContentType.JSON);
+        System.out.println(id);
         this.client.index(index, RequestOptions.DEFAULT);
     }
 }
