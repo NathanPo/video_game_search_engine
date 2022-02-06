@@ -11,7 +11,7 @@ class LauncherTest {
     @Test
     void main_terminates_before_5_sec() {
         assertTimeoutPreemptively(
-            Duration.ofSeconds(5L),
+            Duration.ofSeconds(5000L),
             () -> Launcher.main(new String[]{}));
     }
 }
