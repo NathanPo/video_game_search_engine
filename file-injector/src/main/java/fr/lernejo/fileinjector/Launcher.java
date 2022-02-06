@@ -17,6 +17,9 @@ import java.util.List;
 @SpringBootApplication
 public class Launcher {
 
+    public static final String GAME_INFO = "game_info";
+    public static final String GAME_ID = "game_id";
+
     public static void main(String[] args) {
         try (AbstractApplicationContext springContext = new AnnotationConfigApplicationContext(Launcher.class)) {
             if (args.length > 0) {
@@ -37,8 +40,8 @@ public class Launcher {
     private static void generateMessage(List<Game> games, RabbitTemplate template) {
         for (Game game : games) {
             template.setMessageConverter(new Jackson2JsonMessageConverter());
-            template.convertAndSend("", "game_info", game, msg -> {
-                msg.getMessageProperties().getHeaders().put("game_id", game.id);
+            template.convertAndSend("", GAME_INFO, game, msg -> {
+                msg.getMessageProperties().getHeaders().put(GAME_ID, game.id);
                 return msg;
             });
         }
