@@ -12,14 +12,15 @@ import java.io.IOException;
 
 @Component
 public class GameInfoListener {
-    public static final String GAME_ID = "game_id";
-    public static final String GAMES = "games";
+    public final String GAME_ID = "game_id";
+    public final String GAMES = "games";
+    public final String GAME_INFO_QUEUE = "game_info";
     private final RestHighLevelClient client;
     public GameInfoListener(RestHighLevelClient cli) {
        this.client = cli;
     }
 
-    @RabbitListener(queues =  AmqpConfiguration.GAME_INFO_QUEUE)
+    @RabbitListener(queues =  GAME_INFO_QUEUE)
     public void onMessage(String msg, @Header(GAME_ID) String id) throws IOException {
         IndexRequest index = new IndexRequest(GAMES);
         index.id(id);

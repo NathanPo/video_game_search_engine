@@ -1,8 +1,7 @@
 package fr.lernejo.fileinjector;
 
-import com.fasterxml.jackson.core.exc.StreamReadException;
-import com.fasterxml.jackson.databind.DatabindException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -16,34 +15,21 @@ import java.util.List;
 
 @SpringBootApplication
 public class Launcher {
-
-    public static final String GAME_INFO = "game_info";
-    public static final String GAME_ID = "game_id";
-
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         try (AbstractApplicationContext springContext = new AnnotationConfigApplicationContext(Launcher.class)) {
-            if (args.length > 0) {
+            if (args.length > 0 && args[0] != "") {
                 ObjectMapper map = new ObjectMapper();
                 List<Game> games = Arrays.asList(map.readValue(Paths.get(args[0]).toFile(), Game[].class));
-                RabbitTemplate tmp = springContext.getBean(RabbitTemplate.class);
-                generateMessage(games, tmp);
-            }
-        } catch (StreamReadException e) {
-            e.printStackTrace();
-        } catch (DatabindException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private static void generateMessage(List<Game> games, RabbitTemplate template) {
-        for (Game game : games) {
-            template.setMessageConverter(new Jackson2JsonMessageConverter());
-            template.convertAndSend("", GAME_INFO, game, msg -> {
-                msg.getMessageProperties().getHeaders().put(GAME_ID, game.id);
-                return msg;
-            });
-        }
+                RabbitTemplate template = springContext.getBean(RabbitTemplate.class);
+                for (Game game : games) {
+                    template.setMessageConverter(new Jackson2JsonMessageConverter());
+                    template.convertAndSend("", "game_info", game, msg -> {
+                        msg.getMessageProperties().setContentType(MessageProperties.CONTENT_TYPE_JSON);
+                        msg.getMessageProperties().setHeader("game_id", game.id);
+                        return msg;
+                    });
+                }
+            } else { throw new IOException("No parameters passed!"); }
+        } catch (IOException e) { throw new IOException(e); }
     }
 }

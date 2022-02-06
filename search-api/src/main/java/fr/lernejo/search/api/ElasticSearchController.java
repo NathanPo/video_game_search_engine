@@ -26,7 +26,9 @@ public class ElasticSearchController {
         SearchRequest rqst = new SearchRequest()
                 .source(SearchSourceBuilder.searchSource()
                 .query(new QueryStringQueryBuilder(query)));
-        this.client.search(rqst, RequestOptions.DEFAULT).getHits().forEach(hit -> res.add(hit.getSourceAsMap()));
+        this.client.search(rqst, RequestOptions.DEFAULT)
+            .getHits()
+            .forEach(hit -> res.add(hit.getSourceAsMap()));
         return res;
     }
 }
